@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth import models as auth
 
 from rest_framework import serializers
 
@@ -15,10 +16,14 @@ class Task(serializers.ModelSerializer):
         slug_field='name',
         queryset=models.Category.objects.all(),
         many=True)
+    responsible = serializers.SlugRelatedField(
+            slug_field='username',
+            queryset=auth.User.objects.all()
+    )
 
     class Meta:
         model = models.Task
-        fields = ('id', 'name', 'owner', 'categories', 'done', 'url')
+        fields = ('id', 'name', 'owner', 'categories', 'done', 'url', 'responsible')
 
     def create(self, validated_data):
         categories = validated_data.pop('categories')
@@ -39,3 +44,11 @@ class MyCategory(serializers.ModelSerializer):
     class Meta:
         model = models.Category
         fields = ('id', 'name', 'tasks')
+
+
+class User(serializers.ModelSerializer):
+    users = auth.User()
+    
+    class Meta:
+        model = auth.User
+        fields = ('username',)

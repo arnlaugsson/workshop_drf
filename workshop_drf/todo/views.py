@@ -1,3 +1,5 @@
+from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.filters import DjangoFilterBackend
@@ -42,3 +44,21 @@ class Task(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    @list_route()
+    def assigned(self, request):
+        queryset = self.filter_queryset(
+            self.get_queryset().filter(responsible=request.user))
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+class User(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = serializers.User

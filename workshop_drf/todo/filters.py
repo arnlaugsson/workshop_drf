@@ -14,7 +14,11 @@ class Task(django_filters.FilterSet):
             to_field_name="name",
             queryset=models.Category.objects.all()
     )
+    responsible = django_filters.ModelChoiceFilter(
+            to_field_name="username",
+            queryset=get_user_model().objects.all()
+    )
 
     class Meta:
         model = models.Task
-        fields = ['done', 'owner', 'categories']
+        fields = ['done', 'owner', 'categories', 'responsible']
