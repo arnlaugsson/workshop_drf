@@ -1,12 +1,8 @@
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
+
+from rest_framework import serializers
+
 from . import models
-
-
-class Category(serializers.ModelSerializer):
-    class Meta:
-        model = models.Category
-        fields = ('id', 'name')
 
 
 class Task(serializers.ModelSerializer):
@@ -30,3 +26,16 @@ class Task(serializers.ModelSerializer):
         task.categories = categories
         return task
 
+
+class Category(serializers.ModelSerializer):
+    tasks = Task(many=True, read_only=True)
+    class Meta:
+        model = models.Category
+        fields = ('id', 'name', 'tasks')
+
+
+class MyCategory(serializers.ModelSerializer):
+    tasks = Task(many=True, source='my_tasks')
+    class Meta:
+        model = models.Category
+        fields = ('id', 'name', 'tasks')
