@@ -32,7 +32,7 @@ class Task(serializers.ModelSerializer):
         return task
 
 
-class Category(serializers.ModelSerializer):
+class CategoryList(serializers.ModelSerializer):
     num_tasks = serializers.SerializerMethodField()
 
     class Meta:
@@ -41,6 +41,14 @@ class Category(serializers.ModelSerializer):
 
     def get_num_tasks(self, obj):
         return obj.tasks.count()
+
+
+class CategoryDetail(CategoryList):
+    tasks = Task(many=True, read_only=True)
+
+    class Meta:
+        model = models.Category
+        fields = ('id', 'name', 'num_tasks', 'tasks')
 
 
 class MyCategory(serializers.ModelSerializer):

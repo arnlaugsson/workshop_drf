@@ -10,7 +10,11 @@ from . import serializers, models, filters
 
 class Category(viewsets.ModelViewSet):
     queryset = models.Category.objects.all()
-    serializer_class = serializers.Category
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return serializers.CategoryList
+        return serializers.CategoryDetail
 
     @detail_route()
     def mine(self, request, *args, **kwargs):
